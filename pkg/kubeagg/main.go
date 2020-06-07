@@ -2,7 +2,6 @@ package kubeagg
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os/exec"
 )
@@ -24,26 +23,7 @@ type AllObjects struct {
 	Lists []List
 }
 
-func (objects AllObjects) PrintTable() {
-
-	fmt.Println("CONTEXT\tNAME")
-	for _, list := range objects.Lists {
-		for _, item := range list.Items {
-			fmt.Printf("%v\t%v\n", list.Context, item.Metadata.Name)
-		}
-	}
-}
-
-func (objects AllObjects) PrintJSON() {
-	json, err := json.MarshalIndent(objects, "", "  ")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(string(json))
-}
-
-func run() {
+func Run(config Config) {
 	// TODO Make this as customizable
 	contexts := []string{"docker-desktop", "test-mc-e"}
 
@@ -70,6 +50,11 @@ func run() {
 		allObject.Lists = append(allObject.Lists, ctxObjects)
 	}
 
-	allObject.PrintJSON()
-	allObject.PrintTable()
+	switch config.Output {
+	case "json":
+		allObject.PrintJSON()
+	case "table":
+		allObject.PrintTable()
+	}
+
 }

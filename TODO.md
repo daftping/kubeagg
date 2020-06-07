@@ -1,0 +1,11 @@
+- Makefiel
+  - fmt
+  - lint
+  - build
+  - run
+- Commandline
+- Logs 
+- Docs as code
+- Tests
+- Build 
+- Tag based version
