@@ -6,35 +6,32 @@ import (
 	"os/exec"
 )
 
-type List struct {
-	Items   []Object
-	Context string
-}
-
-type Object struct {
-	Metadata Metadata
-}
-
-type Metadata struct {
-	Name string
-}
-
-type AllObjects struct {
-	Lists []List
-}
+const (
+	kubectl = "kubectl"
+)
 
 func Run(config Config) {
 	// TODO Make this as customizable
 	contexts := []string{"docker-desktop", "test-mc-e"}
 
 	var allObject AllObjects
-	var ctxObjects List
+
+	allObject.Type = config.ObjectType
 
 	// TODO run async
 	for _, context := range contexts {
+		var ctxObjects List
 		// TODO make object type as parameters
 		// TODO make output as parameter
-		out, err := exec.Command("kubectl", "get", "ns", "-o=json", "--context", context).Output()
+		// TODO debug command output
+		out, err := exec.Command(
+			kubectl,
+			"get",
+			config.ObjectType,
+			"--output=json",
+			"--context", context,
+			"--namespace", config.Namespace,
+		).Output()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -55,6 +52,10 @@ func Run(config Config) {
 		allObject.PrintJSON()
 	case "table":
 		allObject.PrintTable()
+	case "wide":
+		allObject.PrintWide()
+	default:
+		log.Printf("Output type %v is not supported, supported values is json, table", config.Output)
 	}
 
 }

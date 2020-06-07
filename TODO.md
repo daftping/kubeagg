@@ -1,4 +1,4 @@
-- Makefiel
+- Makefile
   - fmt
   - lint
   - build
