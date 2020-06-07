@@ -2,17 +2,15 @@ package kubeagg
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os/exec"
 )
 
-const (
-	kubectl = "kubectl"
-)
-
 func Run(config Config) {
-	// TODO Make this as customizable
-	contexts := []string{"docker-desktop", "test-mc-e"}
+	// TODO Add debug logging
+	fmt.Println(GetContexts(config))
+	contexts := GetContexts(config)
 
 	var allObject AllObjects
 
@@ -21,8 +19,6 @@ func Run(config Config) {
 	// TODO run async
 	for _, context := range contexts {
 		var ctxObjects List
-		// TODO make object type as parameters
-		// TODO make output as parameter
 		// TODO debug command output
 		out, err := exec.Command(
 			kubectl,
@@ -55,7 +51,7 @@ func Run(config Config) {
 	case "wide":
 		allObject.PrintWide()
 	default:
-		log.Printf("Output type %v is not supported, supported values is json, table", config.Output)
+		log.Printf("Output type %v is not supported, supported values is json, table, wide", config.Output)
 	}
 
 }
