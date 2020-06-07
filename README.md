@@ -1,3 +1,3 @@
 # kubeagg
-[![Actions Status](https://github.com/{owner}/{repo}/workflows/{workflow_name}/badge.svg)](https://github.com/{owner}/{repo}/actions)
+[![Actions Status](https://github.com/daftping/kubeagg/workflows/go/badge.svg)](https://github.com/daftping/kubeagg/actions)
 Aggregate kubectl output from different contexts.
