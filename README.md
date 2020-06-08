@@ -46,7 +46,7 @@ test-b       ns      default
 test-b       ns      kube-public
 test-b       ns      kube-system
 ```
-## Regexp matched namespaces
+## Regexp matched deployments
 ```bash
 kubeagg get deploy --context-pattern='test-[b|c]$' --namespace=kube-system -o wide 
 CONTEXT      TYPE    NAME
