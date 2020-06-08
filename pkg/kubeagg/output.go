@@ -21,7 +21,7 @@ func (objects AllObjects) PrintTable() {
 	fmt.Println("CONTEXT\t\tNAME")
 	for _, list := range objects.Lists {
 		for _, item := range list.Items {
-			fmt.Printf("%v\t%v\n", objects.Type, item.Metadata.Name)
+			fmt.Printf("%v\t%v\n", list.Context, item.Metadata.Name)
 		}
 	}
 }

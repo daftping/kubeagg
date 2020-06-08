@@ -69,9 +69,9 @@ func GetAllContexts() []string {
 		log.Fatal(errExec)
 	}
 
-	errJson := json.Unmarshal(out, &kubeconfig)
-	if errJson != nil {
-		log.Fatal(errJson)
+	errJSON := json.Unmarshal(out, &kubeconfig)
+	if errJSON != nil {
+		log.Fatal(errJSON)
 	}
 
 	for _, context := range kubeconfig.Contexts {
