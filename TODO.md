@@ -1,9 +1,14 @@
 - Async
 - Wildcards
+- Output
+  - Kind in Type
 - Docs as code
 - Tests
 - Tag based version
-- README.md
+- Commandline
+    - Update description
+- README
+    - Gif
 - Config
     - ENV var
     - Config file
