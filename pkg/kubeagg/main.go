@@ -2,48 +2,50 @@ package kubeagg
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"os/exec"
 )
 
-func Run(config Config) {
-	// TODO Add debug logging
-	fmt.Println(GetContexts(config))
-	contexts := GetContexts(config)
+func Run() {
+	contexts := GetContexts()
+	sugar.Debugw(
+		"Contexts to precess",
+		"contexts", contexts,
+	)
 
 	var allObject AllObjects
 
-	allObject.Type = config.ObjectType
+	allObject.Type = getConfigVar.ObjectType
 
 	// TODO run async
 	for _, context := range contexts {
 		var ctxObjects List
-		// TODO debug command output
-		out, err := exec.Command(
-			kubectl,
+
+		args := []string{
 			"get",
-			config.ObjectType,
+			getConfigVar.ObjectType,
 			"--output=json",
 			"--context", context,
-			"--namespace", config.Namespace,
-		).Output()
-		if err != nil {
-			log.Fatal(err)
+			"--namespace", getConfigVar.Namespace,
 		}
 
-		err2 := json.Unmarshal(out, &ctxObjects)
-		if err2 != nil {
-			log.Fatal(err2)
+		sugar.Debugf("Running: %v %v", kubectl, args)
+
+		out, err := exec.Command(kubectl, args...).Output()
+		if err != nil {
+			sugar.Fatal(err)
+		}
+
+		errJSON := json.Unmarshal(out, &ctxObjects)
+		if errJSON != nil {
+			sugar.Fatal(errJSON)
 		}
 
 		ctxObjects.Context = context
-		// fmt.Printf("%+v\n", ctxObjects)
 
 		allObject.Lists = append(allObject.Lists, ctxObjects)
 	}
 
-	switch config.Output {
+	switch getConfigVar.Output {
 	case "json":
 		allObject.PrintJSON()
 	case "table":
@@ -51,7 +53,7 @@ func Run(config Config) {
 	case "wide":
 		allObject.PrintWide()
 	default:
-		log.Printf("Output type %v is not supported, supported values is json, table, wide", config.Output)
+		sugar.Warnf("Output type %v is not supported, supported values is json, table, wide", getConfigVar.Output)
 	}
 
 }

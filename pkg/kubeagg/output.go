@@ -7,7 +7,6 @@ import (
 )
 
 func (objects AllObjects) PrintWide() {
-
 	fmt.Println("CONTEXT\t\tTYPE\tNAME")
 	for _, list := range objects.Lists {
 		for _, item := range list.Items {
@@ -31,6 +30,5 @@ func (objects AllObjects) PrintJSON() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fmt.Println(string(json))
 }

@@ -1,11 +1,10 @@
-- Makefile
-  - fmt
-  - lint
-  - build
-  - run
-- Commandline
-- Logs 
+- Async
+- Wildcards
 - Docs as code
 - Tests
-- Build 
 - Tag based version
+- README.md
+- Config
+    - ENV var
+    - Config file
+- Autocompletion

@@ -4,6 +4,10 @@ const (
 	kubectl = "kubectl"
 )
 
+type GlobalConfig struct {
+	LogLevel string
+}
+
 type Config struct {
 	Output         string
 	Namespace      string

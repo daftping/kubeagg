@@ -20,7 +20,9 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO Check for null
 		getConfig.ObjectType = args[0]
-		kubeagg.Run(getConfig)
+		kubeagg.SetGlobalConfig(GlobalConfig)
+		kubeagg.SetConfig(getConfig)
+		kubeagg.Run()
 	},
 	// // TODO aliases
 	// ValidArgs: []string{
@@ -33,34 +35,30 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(getCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
 	getCmd.PersistentFlags().StringVarP(
 		&getConfig.Output,
 		"output", "o",
 		"table",
-		"Output format. Supported values: table, wide, json. Default: table",
+		"Output format. Supported values: table, wide, json.",
 	)
 	getCmd.PersistentFlags().StringVarP(
 		&getConfig.Namespace,
 		"namespace", "n",
 		"default",
-		"Namespace to operate in. Default: default",
+		"Namespace to operate in.",
 	)
 	getCmd.PersistentFlags().StringSliceVarP(
 		&getConfig.Contexts,
 		"contexts", "c",
 		[]string{},
 		"Send request to provided contexts. Has precedence over --context-pattern."+
-			"Default: '', --context-pattern is used.",
+			"(default: '', --context-pattern is used)",
 	)
 	getCmd.PersistentFlags().StringVarP(
 		&getConfig.ContextPattern,
 		"context-pattern", "p",
 		".*",
-		"Send request to contexts matched provided regexp. Ignored if --contexts is provided. Default: .*",
+		"Send request to contexts matched provided regexp. Ignored if --contexts is provided.",
 	)
 
 	// Cobra supports local flags which will only run when this command

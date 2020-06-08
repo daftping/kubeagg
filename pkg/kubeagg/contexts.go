@@ -9,22 +9,22 @@ import (
 
 // GetContexts converts provided as parameter --context=... contexts and patters
 // as list of contexts
-func GetContexts(config Config) []string {
+func GetContexts() []string {
 	//Check if contexts is provided, empty slice by default.
 	// --contexts has precedence over --context-pattern
 	// --context-pattern is ignored
-	if len(config.Contexts) > 0 {
+	if len(getConfigVar.Contexts) > 0 {
 		//Support * as context.
 		//Does it make sense?
 		//TODO probably should add * as prefix and suffix for those who doesn't like regexp like me ))
-		if isWildcard(config) {
+		if isWildcard() {
 			return GetAllContexts()
 		}
-		return config.Contexts
+		return getConfigVar.Contexts
 	}
 
 	//If context pattern is used
-	return GetContextsByPattern(config.ContextPattern)
+	return GetContextsByPattern(getConfigVar.ContextPattern)
 }
 
 // GetContextsByPattern converts context pattern regexp into slice of contexts
@@ -39,8 +39,8 @@ func GetContextsByPattern(pattern string) (contexts []string) {
 }
 
 // Check if any of provided contexts is *
-func isWildcard(config Config) bool {
-	for _, context := range config.Contexts {
+func isWildcard() bool {
+	for _, context := range getConfigVar.Contexts {
 		if context == "*" {
 			return true
 		}
