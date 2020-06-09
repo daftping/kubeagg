@@ -3,57 +3,69 @@ package kubeagg
 import (
 	"encoding/json"
 	"os/exec"
+	"sync"
 )
 
+// Run package entrypoint
 func Run() {
+
+	// Generate final contexts lists
 	contexts := GetContexts()
 	sugar.Debugw(
 		"Contexts to precess",
 		"contexts", contexts,
 	)
 
-	var allObject AllObjects
+	// Async context processing
+	var (
+		wg        sync.WaitGroup
+		allObject AllObjects
+	)
 
-	allObject.Type = getConfigVar.ObjectType
-
-	// TODO run async
 	for _, context := range contexts {
-		var ctxObjects List
+		wg.Add(1)
+		go func(context string) {
+			allObject.Lists = append(allObject.Lists, GetFromContext(context))
+			wg.Done()
+		}(context)
 
-		args := []string{
-			"get",
-			getConfigVar.ObjectType,
-			"--output=json",
-			"--context", context,
-			"--namespace", getConfigVar.Namespace,
-		}
+	}
+	wg.Wait()
 
-		sugar.Debugf("Running: %v %v", kubectl, args)
+	// Sync
+	// var allObject AllObjects
 
-		out, err := exec.Command(kubectl, args...).Output()
-		if err != nil {
-			sugar.Fatal(err)
-		}
+	// for _, context := range contexts {
+	// 	allObject.Lists = append(allObject.Lists, GetFromContext(context))
+	// }
 
-		errJSON := json.Unmarshal(out, &ctxObjects)
-		if errJSON != nil {
-			sugar.Fatal(errJSON)
-		}
+	// Output results
+	allObject.Output(getConfigVar.Output)
+}
 
-		ctxObjects.Context = context
-
-		allObject.Lists = append(allObject.Lists, ctxObjects)
+// GetFromContext get objects from individual context
+func GetFromContext(context string) (ctxObjects List) {
+	args := []string{
+		"get",
+		getConfigVar.ObjectType,
+		"--output=json",
+		"--context", context,
+		"--namespace", getConfigVar.Namespace,
 	}
 
-	switch getConfigVar.Output {
-	case "json":
-		allObject.PrintJSON()
-	case "table":
-		allObject.PrintTable()
-	case "wide":
-		allObject.PrintWide()
-	default:
-		sugar.Warnf("Output type %v is not supported, supported values is json, table, wide", getConfigVar.Output)
+	sugar.Debugf("Running: %v %v", kubectl, args)
+
+	out, err := exec.Command(kubectl, args...).Output()
+	if err != nil {
+		sugar.Fatal(err)
 	}
 
+	errJSON := json.Unmarshal(out, &ctxObjects)
+	if errJSON != nil {
+		sugar.Fatal(errJSON)
+	}
+
+	ctxObjects.Context = context
+
+	return
 }

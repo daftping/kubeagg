@@ -1,7 +1,4 @@
-- Async
 - Wildcards
-- Output
-  - Kind in Type
 - Docs as code
 - Tests
 - Tag based version
@@ -13,3 +10,8 @@
     - ENV var
     - Config file
 - Autocompletion
+- Kubeagg search
+- Add support for
+    - --all-namespace
+    - multiple namespace
+    - multiple objects

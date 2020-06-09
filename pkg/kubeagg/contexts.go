@@ -2,15 +2,14 @@ package kubeagg
 
 import (
 	"encoding/json"
-	"log"
 	"os/exec"
 	"regexp"
 )
 
-// GetContexts converts provided as parameter --context=... contexts and patters
-// as list of contexts
+// GetContexts make a decision weather use --contexts or --context-pattern
+// returns list of contexts
 func GetContexts() []string {
-	//Check if contexts is provided, empty slice by default.
+	// Check if contexts is provided, empty slice by default.
 	// --contexts has precedence over --context-pattern
 	// --context-pattern is ignored
 	if len(getConfigVar.Contexts) > 0 {
@@ -23,7 +22,7 @@ func GetContexts() []string {
 		return getConfigVar.Contexts
 	}
 
-	//If context pattern is used
+	// If context pattern is used return list of contexts
 	return GetContextsByPattern(getConfigVar.ContextPattern)
 }
 
@@ -66,12 +65,12 @@ func GetAllContexts() []string {
 		"--output=json",
 	).Output()
 	if errExec != nil {
-		log.Fatal(errExec)
+		sugar.Fatal(errExec)
 	}
 
 	errJSON := json.Unmarshal(out, &kubeconfig)
 	if errJSON != nil {
-		log.Fatal(errJSON)
+		sugar.Fatal(errJSON)
 	}
 
 	for _, context := range kubeconfig.Contexts {

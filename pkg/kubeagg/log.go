@@ -9,6 +9,8 @@ import (
 
 var sugar *zap.SugaredLogger
 
+// getZapLevel returns zapcore.Level for provided --loglevel string.
+// caseinsensitive
 func getZapLevel(level string) zapcore.Level {
 	switch {
 	case strings.EqualFold(level, "Info"):
@@ -26,6 +28,7 @@ func getZapLevel(level string) zapcore.Level {
 	}
 }
 
+// initZapLog set sugar global variable which can be used package wide for logging
 func initZapLog() {
 	if len(globalConfigVar.LogLevel) == 0 {
 		globalConfigVar.LogLevel = "Info"

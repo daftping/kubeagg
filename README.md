@@ -1,10 +1,16 @@
 # Kubectl Aggregate
 ![](https://github.com/daftping/kubeagg/workflows/Go/badge.svg)
 
-Run kubectl get command against multiple contexts and aggregate output.
+Kubectl wrapper to run against multiple contexts.
+
+kubeagg features which are not available in kubectl:
+- provide multiple context (literally or as pattern)
+
 
 # Usage
 ```bash
+Kubectl wrapper to run against multiple contexts
+
 Usage:
   kubeagg get [flags]
 

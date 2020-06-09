@@ -10,13 +10,13 @@ var getConfig kubeagg.Config
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Kubectl wrapper to run against multiple contexts",
+	// 	Long: `A longer description that spans multiple lines and likely contains examples
+	// and usage of using your command. For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	// Cobra is a CLI library for Go that empowers applications.
+	// This application is a tool to generate the needed files
+	// to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO Check for null
 		getConfig.ObjectType = args[0]
@@ -24,7 +24,7 @@ to quickly create a Cobra application.`,
 		kubeagg.SetConfig(getConfig)
 		kubeagg.Run()
 	},
-	// // TODO aliases
+	// Looks like it doesn't make sense we can get all objects
 	// ValidArgs: []string{
 	// 	"ns", "namespace",
 	// 	"pod", "pods",
@@ -60,8 +60,4 @@ func init() {
 		".*",
 		"Send request to contexts matched provided regexp. Ignored if --contexts is provided.",
 	)
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
