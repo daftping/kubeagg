@@ -37,13 +37,22 @@ jobs:
       run: GOOS=darwin GOARCH=amd64 go build -o kubeagg-darwin -v .
 
     - name: Build Windows
-      run: GOOS=windows GOARCH=amd64 go build -o kubeagg-windows -v .
+      run: GOOS=windows GOARCH=amd64 go build -o kubeagg-windows.exe -v .
 
     - name: Test
       run: go test -v .
 
-    - name: Upload binaries
+    - name: Upload Linux
       uses: actions/upload-artifact@v1
       with:
-        name: kubeagg-binaries
-        path: kubeagg-*
+        path: kubeagg-linux
+
+    - name: Upload MacOS
+      uses: actions/upload-artifact@v1
+      with:
+        path: kubeagg-darwin
+
+    - name: Upload Windows
+      uses: actions/upload-artifact@v1
+      with:
+        path: kubeagg-windows.exe
