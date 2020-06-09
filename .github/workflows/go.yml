@@ -45,14 +45,17 @@ jobs:
     - name: Upload Linux
       uses: actions/upload-artifact@v1
       with:
+        name: kubeagg-linux
         path: kubeagg-linux
 
     - name: Upload MacOS
       uses: actions/upload-artifact@v1
       with:
+        name: kubeagg-darwin      
         path: kubeagg-darwin
 
     - name: Upload Windows
       uses: actions/upload-artifact@v1
       with:
+        name: kubeagg-windows.exe      
         path: kubeagg-windows.exe
