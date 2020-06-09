@@ -30,14 +30,20 @@ jobs:
             dep ensure
         fi
 
-    - name: Build
-      run: go build -v .
+    - name: Build Linux
+      run: GOOS=linux GOARCH=amd64 go build . -o kubeagg-linux
+
+    - name: Build MacOS
+      run: GOOS=darwin GOARCH=amd64 go build . -o kubeagg-darwin -v
+
+    - name: Build Windows
+      run: GOOS=windows GOARCH=amd64 go build . -o kubeagg-windows -v
 
     - name: Test
       run: go test -v .
 
-    - name: Upload binary
+    - name: Upload binaries
       uses: actions/upload-artifact@v1
       with:
-        name: kubeagg
-        path: kubeagg
+        name: kubeagg-binaries
+        path: kubeagg-*
