@@ -31,13 +31,13 @@ jobs:
         fi
 
     - name: Build Linux
-      run: GOOS=linux GOARCH=amd64 go build . -o kubeagg-linux
+      run: GOOS=linux GOARCH=amd64 go build -o kubeagg-linux -race -v .
 
     - name: Build MacOS
-      run: GOOS=darwin GOARCH=amd64 go build . -o kubeagg-darwin -v
+      run: GOOS=darwin GOARCH=amd64 go build -o kubeagg-darwin -v .
 
     - name: Build Windows
-      run: GOOS=windows GOARCH=amd64 go build . -o kubeagg-windows -v
+      run: GOOS=windows GOARCH=amd64 go build -o kubeagg-windows -v .
 
     - name: Test
       run: go test -v .
