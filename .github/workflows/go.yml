@@ -9,7 +9,7 @@ on:
 jobs:
 
   build:
-    name: Build
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
 
@@ -30,32 +30,8 @@ jobs:
             dep ensure
         fi
 
-    - name: Build Linux
-      run: GOOS=linux GOARCH=amd64 go build -o kubeagg-linux -race -v .
-
-    - name: Build MacOS
-      run: GOOS=darwin GOARCH=amd64 go build -o kubeagg-darwin -v .
-
-    - name: Build Windows
-      run: GOOS=windows GOARCH=amd64 go build -o kubeagg-windows.exe -v .
+    - name: Build
+      run: go build -race -v .
 
     - name: Test
       run: go test -v .
-
-    - name: Upload Linux
-      uses: actions/upload-artifact@v1
-      with:
-        name: kubeagg-linux
-        path: kubeagg-linux
-
-    - name: Upload MacOS
-      uses: actions/upload-artifact@v1
-      with:
-        name: kubeagg-darwin      
-        path: kubeagg-darwin
-
-    - name: Upload Windows
-      uses: actions/upload-artifact@v1
-      with:
-        name: kubeagg-windows.exe      
-        path: kubeagg-windows.exe
