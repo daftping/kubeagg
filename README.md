@@ -4,10 +4,11 @@
 
 Kubectl wrapper to run against multiple contexts and namespaces.
 
-kubeagg features which are not available in kubectl:
+## Features
 
 - get objects from multiple context (as list or as pattern)
 - get objects from multiple namespaces (as list or as pattern)
+- aggregated JSON output (can be used for further parsing)
 
 ## Usage
 
