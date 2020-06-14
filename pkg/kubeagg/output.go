@@ -9,56 +9,51 @@ import (
 )
 
 // Output in provided format
-func (objects AllObjects) Output(output string) {
-	switch output {
+func (c *Contexts) Output(outputType string) {
+	switch outputType {
 	case "json":
-		objects.PrintJSON()
+		c.OutputJSON()
 	case "table":
-		objects.PrintTable()
-	case "wide":
-		objects.PrintWide()
+		c.OutputTable()
+	// case "wide":
+	// 	objects.PrintWide()
 	default:
-		sugar.Warnf("Output type %v is not supported, supported values is json, table, wide", output)
+		sugar.Warnf("Output type %v is not supported, supported values is json, table, wide", outputType)
 	}
 }
 
 // PrintTable in table format
-func (objects AllObjects) PrintTable() {
+func (c *Contexts) OutputTable() {
 	w := new(tabwriter.Writer)
 	// minwidth, tabwidth, padding, padchar, flags
 	w.Init(os.Stdout, 8, 8, 0, '\t', 0)
 	defer w.Flush()
 
-	fmt.Fprintf(w, "%s\t%s\t", "CONTEXT", "NAME")
+	if !globalConfigVar.NoHeaders {
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t", "CONTEXT", "NAMESPACE", "TYPE", "NAME")
+	}
 
-	for _, list := range objects.Lists {
-		for _, item := range list.Items {
-			fmt.Fprintf(w, "\n %v\t%v", list.Context, item.Metadata.Name)
+	// Namespaced
+	for i := 0; i < len(c.Contexts); i++ {
+		for j := 0; j < len(c.Contexts[i].Namespaces); j++ {
+			for _, object := range c.Contexts[i].Namespaces[j].Objects.Items {
+				fmt.Fprintf(w, "\n%v\t%v\t%v\t%v", c.Contexts[i].Name, c.Contexts[i].Namespaces[j].Name, object.Kind, object.Metadata.Name)
+			}
 		}
 	}
-	fmt.Fprintln(w, "")
-}
-
-// PrintWide same as PrintTable but with additional fields
-func (objects AllObjects) PrintWide() {
-	w := new(tabwriter.Writer)
-	// minwidth, tabwidth, padding, padchar, flags
-	w.Init(os.Stdout, 8, 8, 0, '\t', 0)
-	defer w.Flush()
-
-	fmt.Fprintf(w, "%s\t%s\t%s\t%s\t", "CONTEXT", "TYPE", "NAME", "STATUS")
-
-	for _, list := range objects.Lists {
-		for _, item := range list.Items {
-			fmt.Fprintf(w, "\n %v\t%v\t%v\t%v", list.Context, item.Kind, item.Metadata.Name, item.Status.Phase)
+	// NonNamespaced
+	for i := 0; i < len(c.Contexts); i++ {
+		for _, object := range c.Contexts[i].NonNamespaced.Items {
+			fmt.Fprintf(w, "\n%v\t%v\t%v\t%v", c.Contexts[i].Name, "n\\a", object.Kind, object.Metadata.Name)
 		}
 	}
+
 	fmt.Fprintln(w, "")
+
 }
 
-// PrintJSON output in JSON format
-func (objects AllObjects) PrintJSON() {
-	json, err := json.MarshalIndent(objects, "", "  ")
+func (c *Contexts) OutputJSON() {
+	json, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
 		log.Fatal(err)
 	}

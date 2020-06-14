@@ -15,13 +15,27 @@ var GlobalConfig kubeagg.GlobalConfig
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "kubeagg",
-	Short: "Kubectl wrapper to run against multiple contexts",
-	// 	Long: `A longer description that spans multiple lines and likely contains
-	// examples and usage of using your application. For example:
+	Short: "Kubectl wrapper to run against multiple contexts and namespaces",
+	Long: `Kubectl wrapper can get any objects in any cluster in any namespace.
+	
+	You can provide list of contexts or context-pattern (regexp)
+	If object you are trying to get namespaced you can provide list of 
+	namespaces or namespace-pattern (regexp)
+`,
+	Example: `
+	// Get namespaces from all contexts in (kubectl config view)
+	kubeagg get ns
 
-	// Cobra is a CLI library for Go that empowers applications.
-	// This application is a tool to generate the needed files
-	// to quickly create a Cobra application.`,
+	// Get pods from contexts matched 'dev$|test$' regexp and in 
+	// namespaces matched 'default|test|dev' regexp
+	kubeagg \
+		--context-pattern='dev$|test$' \
+		--namespace-pattern='default|test|dev' \
+		get pod
+	
+	// Get all nodes in "docker-desktop" and "test" contexts
+	kubeagg --contexts=docker-desktop,test get no
+	`,
 
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -49,6 +63,49 @@ func init() {
 		"loglevel", "l",
 		"Error",
 		"Debug, Info, Warn, Error, Fatal",
+	)
+
+	rootCmd.PersistentFlags().StringVarP(
+		&GlobalConfig.Output,
+		"output", "o",
+		"table",
+		"Output format. Supported values: table, wide, json.",
+	)
+
+	rootCmd.PersistentFlags().StringSliceVar(
+		&GlobalConfig.Contexts,
+		"contexts",
+		[]string{},
+		"Send request to provided contexts. Has precedence over --context-pattern."+
+			"(default: '', --context-pattern is used)",
+	)
+	rootCmd.PersistentFlags().StringVar(
+		&GlobalConfig.ContextPattern,
+		"context-pattern",
+		".*",
+		"Send request to contexts matched provided regexp. Ignored if --contexts is provided.",
+	)
+
+	rootCmd.PersistentFlags().BoolVar(
+		&GlobalConfig.NoHeaders,
+		"no-headers",
+		false,
+		"Skip headers in output",
+	)
+
+	rootCmd.PersistentFlags().StringSliceVarP(
+		&GlobalConfig.Namespaces,
+		"namespaces", "n",
+		[]string{},
+		"List namespaces to get objects from."+
+			"(default: '', --namespace-pattern is used)",
+	)
+
+	rootCmd.PersistentFlags().StringVar(
+		&GlobalConfig.NamespacePattern,
+		"namespace-pattern",
+		".*",
+		"Get objects from namespaces matched provided regexp. Ignored if --namespaces is provided.",
 	)
 
 }

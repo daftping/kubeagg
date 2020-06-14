@@ -6,24 +6,51 @@ import (
 	"regexp"
 )
 
-// GetContexts make a decision weather use --contexts or --context-pattern
-// returns list of contexts
-func GetContexts() []string {
+// GetContexts make a decision whether use --contexts or --context-pattern
+func (c *Contexts) GetContexts() {
 	// Check if contexts is provided, empty slice by default.
 	// --contexts has precedence over --context-pattern
 	// --context-pattern is ignored
-	if len(getConfigVar.Contexts) > 0 {
+	if len(globalConfigVar.Contexts) > 0 {
 		//Support * as context.
 		//Does it make sense?
 		//TODO probably should add * as prefix and suffix for those who doesn't like regexp like me ))
 		if isWildcard() {
-			return GetAllContexts()
+			c.Append(GetAllContexts())
+			return
 		}
-		return getConfigVar.Contexts
+		//Add provided contexts as is
+		c.Append(globalConfigVar.Contexts)
+		sugar.Debugw(
+			"Contexts to process",
+			"contexts", c.GetContextsNames(),
+		)
+		return
 	}
 
-	// If context pattern is used return list of contexts
-	return GetContextsByPattern(getConfigVar.ContextPattern)
+	// If context pattern is used resolve pattern and add to Contexts
+	c.Append(GetContextsByPattern(globalConfigVar.ContextPattern))
+	sugar.Debugw(
+		"Contexts to process",
+		"contexts", c.GetContextsNames(),
+	)
+	return
+}
+
+// Append convert []string to []Context and append to Contexts
+func (c *Contexts) Append(contexts []string) {
+	for _, context := range contexts {
+		c.Contexts = append(c.Contexts, Context{
+			Name: context,
+		})
+	}
+}
+
+func (c *Contexts) GetContextsNames() (s []string) {
+	for _, context := range c.Contexts {
+		s = append(s, context.Name)
+	}
+	return
 }
 
 // GetContextsByPattern converts context pattern regexp into slice of contexts
@@ -39,7 +66,7 @@ func GetContextsByPattern(pattern string) (contexts []string) {
 
 // Check if any of provided contexts is *
 func isWildcard() bool {
-	for _, context := range getConfigVar.Contexts {
+	for _, context := range globalConfigVar.Contexts {
 		if context == "*" {
 			return true
 		}

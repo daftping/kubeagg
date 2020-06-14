@@ -1,71 +1,31 @@
 package kubeagg
 
-import (
-	"encoding/json"
-	"os/exec"
-	"sync"
-)
+import "sync"
+
+// New return Contexts object
+func New() *Contexts {
+	contexts := Contexts{}
+	contexts.WaitGroup = sync.WaitGroup{}
+	return &contexts
+}
 
 // Run package entrypoint
 func Run() {
+	// Get reference to Contexts object
+	c := New()
 
-	// Generate final contexts lists
-	contexts := GetContexts()
-	sugar.Debugw(
-		"Contexts to precess",
-		"contexts", contexts,
-	)
+	// Populate contexts
+	c.GetContexts()
 
-	// Async context processing
-	var (
-		wg        sync.WaitGroup
-		allObject AllObjects
-	)
+	// Handle namespaced and non namespaced object differently
+	if contains(GetNonNamespacedObjects(), getConfigVar.ObjectType) {
+		c.PopulateNonNamespacedObjectsAsync()
 
-	for _, context := range contexts {
-		wg.Add(1)
-		go func(context string) {
-			allObject.Lists = append(allObject.Lists, GetFromContext(context))
-			wg.Done()
-		}(context)
-
-	}
-	wg.Wait()
-
-	// Sync
-	// var allObject AllObjects
-
-	// for _, context := range contexts {
-	// 	allObject.Lists = append(allObject.Lists, GetFromContext(context))
-	// }
-
-	// Output results
-	allObject.Output(getConfigVar.Output)
-}
-
-// GetFromContext get objects from individual context
-func GetFromContext(context string) (ctxObjects List) {
-	args := []string{
-		"get",
-		getConfigVar.ObjectType,
-		"--output=json",
-		"--context", context,
-		"--namespace", getConfigVar.Namespace,
+	} else {
+		c.GetNamespaces()
+		c.PopulateNamespacedObjectsAsync()
 	}
 
-	sugar.Debugf("Running: %v %v", kubectl, args)
-
-	out, err := exec.Command(kubectl, args...).Output()
-	if err != nil {
-		sugar.Fatal(err)
-	}
-
-	errJSON := json.Unmarshal(out, &ctxObjects)
-	if errJSON != nil {
-		sugar.Fatal(errJSON)
-	}
-
-	ctxObjects.Context = context
-
-	return
+	// Output in provided format
+	c.Output(globalConfigVar.Output)
 }

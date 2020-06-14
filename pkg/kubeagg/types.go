@@ -1,49 +1,103 @@
 package kubeagg
 
-const (
-	// kubectl executable
-	kubectl = "kubectl"
+import (
+	"sync"
+	"time"
 )
+
+// GetNonNamespacedObjects get non namespaced objects
+// Should remove this hardcode and make decision based on cluster objects types
+// # In a namespace
+// kubectl api-resources --namespaced=true
+// # Not in a namespace
+// kubectl api-resources --namespaced=false
+func GetNonNamespacedObjects() []string {
+	return []string{
+		"componentstatuses", "cs",
+		"namespaces", "ns",
+		"node", "nodes", "no",
+		"persistentvolumes", "pv",
+		"mutatingwebhookconfigurations",
+		"validatingwebhookconfigurations",
+		"customresourcedefinitions", "crd", "crds",
+		"apiservices",
+		"tokenreviews",
+		"selfsubjectaccessreviews",
+		"selfsubjectrulesreviews",
+		"subjectaccessreviews",
+		"certificatesigningrequests", "csr",
+		"compositecontrollers", "cc", "cctl",
+		"decoratorcontrollers", "dec", "decorators",
+		"runtimeclasses",
+		"podsecuritypolicies", "psp",
+		"clusterrolebindings",
+		"clusterroles",
+		"priorityclasses", "pc",
+		"csidrivers",
+		"csinodes",
+		"storageclasses", "sc",
+		"volumeattachments",
+	}
+}
+
+// Configs passed from commandline //
 
 // GlobalConfig global command line parameters values
 type GlobalConfig struct {
-	LogLevel string
+	LogLevel         string
+	Output           string
+	NoHeaders        bool
+	Contexts         []string
+	ContextPattern   string
+	Namespaces       []string
+	NamespacePattern string
 }
 
 // Config set command command line parameters values
 type Config struct {
-	Output         string
-	Namespace      string
-	ObjectType     string
-	Contexts       []string
-	ContextPattern string
+	ObjectType string
 }
 
-// List of items in context
-type List struct {
-	Items   []Object
-	Context string
-}
+// Kubernetes JSON structure
 
-// Object any object in the context
+// Object Kubernetes object root structure
 type Object struct {
 	Kind     string
 	Metadata Metadata
 	Status   Status
 }
 
-// Status of the object
+//List of kubernetes objects
+type List struct {
+	Items []Object
+}
+
+// Status kubernetes objects status
 type Status struct {
 	Phase string
 }
 
-// Metadata of the object
+// Metadata kubernetes object metadata
 type Metadata struct {
-	Name string
+	Name              string
+	Namespace         string
+	CreationTimestamp time.Time
 }
 
-// AllObjects aggregated list of all contexts
-type AllObjects struct {
-	Lists []List
-	Type  string
+// Aggregated structure
+
+type Contexts struct {
+	Contexts  []Context
+	WaitGroup sync.WaitGroup
+}
+
+type Context struct {
+	Name          string
+	Namespaces    []Namespace
+	NonNamespaced List
+}
+
+type Namespace struct {
+	Name    string
+	Objects List
 }
