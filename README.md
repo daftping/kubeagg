@@ -56,7 +56,7 @@ Flags:
 Use "kubeagg [command] --help" for more information about a command.
 ```
 
-## Get namespaces in all contexts in ~/.kube/config
+### Get namespaces in all contexts in ~/.kube/config
 
 ```bash
 kubeagg get ns
@@ -77,7 +77,7 @@ test-b          n\a             Namespace       kube-public
 test-b          n\a             Namespace       kube-system
 ```
 
-## Get pod from contexts matched pattern and namespaces matched pattern
+### Get pod from contexts matched pattern and namespaces matched pattern
 
 ```bash
 kubeagg \
@@ -89,4 +89,24 @@ docker-desktop  default         Pod     kubeagg
 docker-desktop  default         Pod     kubeagg-68898df575-hcvs5  
 test-a          default         Pod     kubeagg2
 test-a          kube-public     Pod     kubeagg3
+```
+
+## Kubectl plugin
+Can be used as kubectl plugin. Rename kubeagg to kubectl-agg and put it into your PATH.
+Double check if plugin is available:
+
+```
+kubectl plugin list                   
+The following compatible plugins are available:
+/usr/local/bin/kubectl-agg
+...
+```
+
+Use kubeagg as plugin:
+
+```
+kubectl agg get pod \
+        --context-pattern='^docker-desktop$|^test' \
+        --namespace-pattern='default|-public$'
+...
 ```
