@@ -2,7 +2,7 @@
 
 ![](https://github.com/daftping/kubeagg/workflows/Go/badge.svg) ![Release](https://github.com/daftping/kubeagg/workflows/Release/badge.svg)
 
-Kubectl wrapper to run against multiple contexts and namespaces.
+Kubectl wrapper to get objects from multiple contexts and namespaces.
 
 ## Features
 
