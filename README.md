@@ -9,8 +9,36 @@ Kubectl wrapper to run against multiple contexts and namespaces.
 - get objects from multiple context (as list or as pattern)
 - get objects from multiple namespaces (as list or as pattern)
 - aggregated JSON output (can be used for further parsing)
+- can be used as kubectl plugin
 
-## Usage
+## How to install
+
+### Standalone binary
+
+Download binary from [release page](https://github.com/daftping/kubeagg/releases) for your platform and put it into $PATH.
+
+### Kubectl plugin
+
+Download binary from [release page](https://github.com/daftping/kubeagg/releases) for your platform. Rename kubeagg binary to kubectl-agg and put it into your $PATH.
+Double check if plugin is available:
+
+```
+kubectl plugin list                   
+The following compatible plugins are available:
+/usr/local/bin/kubectl-agg
+...
+```
+
+Use kubeagg as plugin:
+
+```
+kubectl agg get pod \
+        --context-pattern='^docker-desktop$|^test' \
+        --namespace-pattern='default|-public$'
+...
+```
+
+## How to use
 
 ```bash
 Kubectl wrapper can get any objects in any cluster in any namespace.
@@ -91,22 +119,3 @@ test-a          default         Pod     kubeagg2
 test-a          kube-public     Pod     kubeagg3
 ```
 
-## Kubectl plugin
-Can be used as kubectl plugin. Rename kubeagg to kubectl-agg and put it into your PATH.
-Double check if plugin is available:
-
-```
-kubectl plugin list                   
-The following compatible plugins are available:
-/usr/local/bin/kubectl-agg
-...
-```
-
-Use kubeagg as plugin:
-
-```
-kubectl agg get pod \
-        --context-pattern='^docker-desktop$|^test' \
-        --namespace-pattern='default|-public$'
-...
-```
